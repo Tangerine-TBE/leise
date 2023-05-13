@@ -3,7 +3,6 @@ package cn.com.dihealth.myapplication
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 
 class CustomView @JvmOverloads constructor(

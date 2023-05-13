@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
      val animator =   ObjectAnimator.ofFloat(binding.customView,"offsetAngle",360f)
         animator.repeatCount = ValueAnimator.INFINITE
         animator.interpolator = LinearInterpolator()
-        animator.duration = 10 * 1000
+        animator.duration = 8 * 1000
         animator.start()
 //        val customView:test = binding.customView
 //        customView.startAnimation()
