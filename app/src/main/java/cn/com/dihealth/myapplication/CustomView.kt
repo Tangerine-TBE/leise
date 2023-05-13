@@ -57,7 +57,7 @@ class CustomView @JvmOverloads constructor(
                 1f.dp,
                 width.toFloat(),
                 height.toFloat(),
-                false, 0.366f,
+                false, 0.2f,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
 
             ),
@@ -69,7 +69,7 @@ class CustomView @JvmOverloads constructor(
                 1.dp,
                 width.toFloat(),
                 height.toFloat(),
-                true, 0.44f,
+                true, 0.3f,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
             ),
             CircleArcEffect(
@@ -125,7 +125,7 @@ class CustomView @JvmOverloads constructor(
                 "#318BF6",
                 2.dp, width.toFloat(),
                 height.toFloat(),
-                false, 0.6f,
+                false, 1f,
                 listOf(
                     CircleDash(5.dp, 0.7f, "#318BF6"),
                     CircleDash(9.dp, 0.15f, "#318BF6")
@@ -139,7 +139,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true, 0.8f,
+                true, 1.2f,
                 listOf(
                     CircleDash(4.5f.dp, 0.49f, "#318BF6")
                 )
@@ -151,7 +151,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                false, 1f,
+                false, 1.5f,
                 listOf(
                     CircleDash(3.5f.dp, 0.2f, "#318BF6")
                 )
@@ -163,7 +163,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true, 1.2f,
+                true, 2f,
                 listOf(
                     CircleDash(3.5f.dp, 0.9f, "#318BF6"),
                     CircleDash(2.5f.dp, 0.3f, "#318BF6")
@@ -177,7 +177,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                false, 1.4f,
+                false, 2.5f,
                 listOf()
             ),
             CircleArcEffect(
@@ -187,7 +187,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true, 1.5f,
+                true, 3f,
                 listOf()
             )
         )
