@@ -3,10 +3,7 @@ package cn.com.dihealth.myapplication
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Bundle
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
-import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AppCompatActivity
 import cn.com.dihealth.myapplication.databinding.ActivityMainBinding
 
