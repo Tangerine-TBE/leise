@@ -251,13 +251,12 @@ class CustomView @JvmOverloads constructor(
             matrix.setTranslate(centerX, centerY)
         }
 
-        public fun matrixRotate(rotateDeg: Float) {
+        fun matrixRotate(rotateDeg: Float) {
             matrix.reset()
             if (counterclockwise){
                 matrix.postRotate(rotateDeg, centerX, centerY)
             }else{
                 matrix.postRotate(-rotateDeg, centerX, centerY)
-
             }
         }
     }
