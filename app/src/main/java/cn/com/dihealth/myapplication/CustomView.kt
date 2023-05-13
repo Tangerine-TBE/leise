@@ -27,8 +27,6 @@ class CustomView @JvmOverloads constructor(
             field = value
             invalidate()
         }
-
-
     private lateinit var mEffects: List<Effect>
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -41,6 +39,12 @@ class CustomView @JvmOverloads constructor(
         super.onLayout(changed, left, top, right, bottom)
         init()
     }
+    public fun reverser(){
+        for (item in mEffects){
+            item.setCounterClockwise()
+        }
+        invalidate()
+    }
 
     private fun init() {
         mEffects = listOf(
@@ -52,7 +56,7 @@ class CustomView @JvmOverloads constructor(
                 1f.dp,
                 width.toFloat(),
                 height.toFloat(),
-                false,
+                false,0.366f,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
 
             ),
@@ -64,7 +68,7 @@ class CustomView @JvmOverloads constructor(
                 1.dp,
                 width.toFloat(),
                 height.toFloat(),
-                true,
+                true,0.44f,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
             ),
             CircleArcEffect(
@@ -75,7 +79,7 @@ class CustomView @JvmOverloads constructor(
                 1.dp,
                 width.toFloat(),
                 height.toFloat(),
-                true,
+                true,0.65f,
                 listOf(
                     CircleDash(5.dp, 1f, "#318BF6")
                 )
@@ -87,7 +91,7 @@ class CustomView @JvmOverloads constructor(
                 "#318BF6",
                 3.dp, width.toFloat(),
                 height.toFloat(),
-                true,
+                true,0.1f,
                 listOf(
                     CircleDash(5.dp, 1f, "#318BF6")
                 )
@@ -100,7 +104,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                false,
+                false,0.2f,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
             ),
             StandardArcEffect(
@@ -110,7 +114,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true,
+                true,0.4f,
                 DashPathEffect(floatArrayOf(25.dp, 15.dp), 0f)
             ),
             CircleArcEffect(
@@ -120,7 +124,7 @@ class CustomView @JvmOverloads constructor(
                 "#318BF6",
                 2.dp, width.toFloat(),
                 height.toFloat(),
-                false,
+                false,0.6f,
                 listOf(
                     CircleDash(5.dp, 0.7f, "#318BF6"),
                     CircleDash(9.dp, 0.15f, "#318BF6")
@@ -134,7 +138,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true,
+                true,0.8f,
                 listOf(
                     CircleDash(4.5f.dp, 0.49f, "#318BF6")
                 )
@@ -146,7 +150,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                false,
+                false,1f,
                 listOf(
                     CircleDash(3.5f.dp, 0.2f, "#318BF6")
                 )
@@ -158,7 +162,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true,
+                true,1.2f,
                 listOf(
                     CircleDash(3.5f.dp, 0.9f, "#318BF6"),
                     CircleDash(2.5f.dp, 0.3f, "#318BF6")
@@ -172,7 +176,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                false,
+                false,1.4f,
                 listOf()
             ),
             CircleArcEffect(
@@ -182,7 +186,7 @@ class CustomView @JvmOverloads constructor(
                 "#D6E8FD",
                 1.dp, width.toFloat(),
                 height.toFloat(),
-                true,
+                true,1.5f,
                 listOf()
             )
         )
@@ -197,12 +201,12 @@ class CustomView @JvmOverloads constructor(
             paint.strokeWidth = item.strokeWidth
             if (item is StandardArcEffect) {
                 paint.pathEffect = item.pathEffect
-                item.matrixRotate(offsetAngle)
+                item.matrixRotate(offsetAngle*item.scale)
                 val rotatedPath = Path()
                 item.path.transform(item.matrix, rotatedPath)
                 canvas.drawPath(rotatedPath, paint)
             } else if (item is CircleArcEffect) {
-                item.matrixRotate(offsetAngle)
+                item.matrixRotate(offsetAngle*item.scale)
                 paint.pathEffect = null
                 val rotatedPath = Path()
                 item.path.transform(item.matrix, rotatedPath)
@@ -232,7 +236,9 @@ class CustomView @JvmOverloads constructor(
         val strokeWidth: Float,//线条的宽度
         width: Float,
         height: Float,
-        private val counterclockwise:Boolean
+        private var counterclockwise:Boolean = false,
+        val scale:Float,//放大速度
+
     ) {
         val path = Path()
         val matrix = Matrix()
@@ -253,11 +259,14 @@ class CustomView @JvmOverloads constructor(
 
         fun matrixRotate(rotateDeg: Float) {
             matrix.reset()
-            if (counterclockwise){
+            if (!counterclockwise){
                 matrix.postRotate(rotateDeg, centerX, centerY)
             }else{
                 matrix.postRotate(-rotateDeg, centerX, centerY)
             }
+        }
+        fun setCounterClockwise(){
+            counterclockwise = !counterclockwise
         }
     }
 
@@ -270,9 +279,10 @@ class CustomView @JvmOverloads constructor(
         val a: Float,
         val s: Float,
         val d:  Boolean,
+        val f: Float,
         val circles: List<CircleDash>,//路径特效
 
-    ) : Effect(q, w, t / 2 + e, r, t, a, s,d)
+    ) : Effect(q, w, t / 2 + e, r, t, a, s,d,f)
 
     data class CircleDash(
         val size: Float, //添加圆点的大小
@@ -289,7 +299,8 @@ class CustomView @JvmOverloads constructor(
         val a: Float,
         val s: Float,
         val d:  Boolean,
+        val f:Float,//放大速度
         val pathEffect: PathEffect //路径特效
-    ) : Effect(q, w, t / 2 + e, r, t, a, s,d)
+    ) : Effect(q, w, t / 2 + e, r, t, a, s,d,f)
 
 }
