@@ -1,53 +1,65 @@
 package cn.com.dihealth.myapplication
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.LinearInterpolator
 
 class test  @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
-    private val mPath = Path()
-    private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val mPathMeasure = PathMeasure()
-    private val mDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.BLACK
-        style = Paint.Style.FILL
+    // 声明路径、路径测量工具、描边画笔、边框偏移量、路径终点坐标数组和路径样式
+    private val path = Path()
+    private val pathMeasure = PathMeasure()
+    private val paint = Paint().apply {
+        color = Color.RED
+        strokeWidth = 5f
+        style = Paint.Style.STROKE
     }
+    private val item = PathItem(0f, 200f, 300f, 200f)
+    private val pos = FloatArray(2)
+    private val pathDst = Path()
+    private var phase = 0f // 用于动画的属性
+
     init {
-        mPaint.apply {
-            strokeWidth = 10F
-            style = Paint.Style.STROKE
-            color = Color.BLACK
-        }
-        // 假设已有路径是一条曲线，这里只是举例，您需要根据实际路径修改
-        mPath.moveTo(100F, 100F)
-        mPath.quadTo(300F, 300F, 500F, 100F)
-        // 获取路径的总长度
-        mPathMeasure.setPath(mPath, false)
-        val length = mPathMeasure.length
-        // 根据路径的长度，计算出需要添加圆点的位置
-        val pos = FloatArray(2)
-        val tan = FloatArray(2)
-        mPathMeasure.getPosTan(length, pos, tan)
-        // 创建一个 Path，添加一个圆点
-        val dotPath = Path().apply {
-            addCircle(pos[0], pos[1], 10F, Path.Direction.CW)
-        }
-        // 将新的 Path 添加到原有路径的结尾
-        mPath.addPath(dotPath)
+        // 构造函数中初始化路径
+        path.addCircle(item.width / 2.0f, item.height / 2.0f, (item.width.toFloat() - 2 * item.offset) / 2, Path.Direction.CCW)
+        pathMeasure.setPath(path, false)
     }
-    override fun onDraw(canvas: Canvas) {
+
+    override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        // 绘制路径
-        canvas.drawPath(mPath, mPaint)
-        // 绘制实心圆点
-        val pos = FloatArray(2)
-        val length = mPathMeasure.length
-        mPathMeasure.getPosTan(length, pos, null)
-        canvas.drawCircle(pos[0], pos[1], 10F, mDotPaint)
+        // 在onDraw方法中计算并绘制路径
+        canvas?.drawColor(Color.WHITE) // 清空背景色
+        val distance = pathMeasure.length * phase
+        pathMeasure.getSegment(0f, distance, pathDst, true)
+        canvas?.drawPath(pathDst, paint)
+    }
+
+    // 开始动画
+    fun startAnimation() {
+        val animator = ValueAnimator.ofFloat(1f, 2f)
+        animator.duration = 2000L
+        animator.repeatCount = ValueAnimator.INFINITE
+        animator.interpolator = LinearInterpolator()
+        animator.addUpdateListener {
+            phase = it.animatedValue as Float
+            invalidate()
+        }
+        animator.start()
+    }
+
+    // 声明路径对象的参数，包括边框宽度、偏移量和宽高
+    data class PathItem(
+        val offset: Float, // 边框偏移量
+        val startX: Float,
+        val endX: Float,
+        val height: Float
+    ) {
+        val width: Float = endX - startX
     }
 
 }

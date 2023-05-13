@@ -1,5 +1,6 @@
 package cn.com.dihealth.myapplication
 
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.animation.AccelerateInterpolator
@@ -15,22 +16,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
        val binding =  ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//     val animator =   ObjectAnimator.ofFloat(binding.customView,"offsetAngle",360f)
-//        animator.repeatCount = ValueAnimator.INFINITE
-//        animator.interpolator = LinearInterpolator()
-//        animator.duration = 10 * 1000
-//        animator.start()
-
-        val anim: Animation = RotateAnimation(360f,
-            0f,Animation.RELATIVE_TO_SELF,
-            0.5f,Animation.RELATIVE_TO_SELF,
-            0.5f
-        )
-        anim.fillAfter = true // 设置保持动画最后的状态
-        anim.duration = 10 * 1000 // 设置动画时间
-        anim.repeatCount = ValueAnimator.INFINITE
-        anim.interpolator = LinearInterpolator() // 设置插入器
-        binding.customView.startAnimation(anim)
+     val animator =   ObjectAnimator.ofFloat(binding.customView,"offsetAngle",360f)
+        animator.repeatCount = ValueAnimator.INFINITE
+        animator.interpolator = LinearInterpolator()
+        animator.duration = 10 * 1000
+        animator.start()
+//        val customView:test = binding.customView
+//        customView.startAnimation()
+//        val anim: Animation = RotateAnimation(360f,
+//            0f,Animation.RELATIVE_TO_SELF,
+//            0.5f,Animation.RELATIVE_TO_SELF,
+//            0.5f
+//        )
+//        anim.fillAfter = true // 设置保持动画最后的状态
+//        anim.duration = 10 * 1000 // 设置动画时间
+//        anim.repeatCount = ValueAnimator.INFINITE
+//        anim.interpolator = LinearInterpolator() // 设置插入器
+//        binding.customView.startAnimation(anim)
 
     }
 }

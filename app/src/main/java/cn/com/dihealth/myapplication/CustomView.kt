@@ -3,15 +3,16 @@ package cn.com.dihealth.myapplication
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
-import android.view.WindowInsetsAnimation.Bounds
-import android.view.WindowManager
 
 class CustomView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
+    private val pathMeasure = PathMeasure()
+
+    private val endPos = FloatArray(2)
     private val paint = Paint().apply {
         color = Color.RED
         style = Paint.Style.STROKE
@@ -22,28 +23,39 @@ class CustomView @JvmOverloads constructor(
         style = Paint.Style.FILL
         Paint.ANTI_ALIAS_FLAG
     }
-    private val pathMeasure = PathMeasure()
-     var offsetAngle = 0f
+    var offsetAngle = 0f
         set(value) {
             field = value
             invalidate()
         }
-    open class Effect(
-        val startAngle: Float,//开始角度
-        val sweepAngle: Float,//偏移角度
-        val offset: Float,//内部偏移量
-        val color: String,//画笔的颜色设置
-        val strokeWidth: Float
-    )
-    private val mEffects by lazy {
-        listOf(
+
+
+    private lateinit var mEffects: List<Effect>
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        setMeasuredDimension(widthSize, widthSize)
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        init()
+    }
+
+    private fun init() {
+        mEffects = listOf(
             StandardArcEffect(
                 -270f,
                 180f,
                 0f,
                 "#D6E8FD",
                 1f.dp,
+                width.toFloat(),
+                height.toFloat(),
+                false,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
+
             ),
             StandardArcEffect(
                 0f,
@@ -51,6 +63,9 @@ class CustomView @JvmOverloads constructor(
                 8.dp,
                 "#D6E8FD",
                 1.dp,
+                width.toFloat(),
+                height.toFloat(),
+                true,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
             ),
             CircleArcEffect(
@@ -59,6 +74,9 @@ class CustomView @JvmOverloads constructor(
                 24.dp,
                 "#318BF6",
                 1.dp,
+                width.toFloat(),
+                height.toFloat(),
+                true,
                 listOf(
                     CircleDash(5.dp, 1f, "#318BF6")
                 )
@@ -68,7 +86,9 @@ class CustomView @JvmOverloads constructor(
                 90f,
                 24.dp,
                 "#318BF6",
-                3.dp,
+                3.dp, width.toFloat(),
+                height.toFloat(),
+                true,
                 listOf(
                     CircleDash(5.dp, 1f, "#318BF6")
                 )
@@ -79,7 +99,9 @@ class CustomView @JvmOverloads constructor(
                 180f,
                 32.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                false,
                 DashPathEffect(floatArrayOf(8.dp, 4.dp), 0f)
             ),
             StandardArcEffect(
@@ -87,7 +109,9 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 48.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                true,
                 DashPathEffect(floatArrayOf(25.dp, 15.dp), 0f)
             ),
             CircleArcEffect(
@@ -95,7 +119,9 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 40.dp,
                 "#318BF6",
-                2.dp,
+                2.dp, width.toFloat(),
+                height.toFloat(),
+                false,
                 listOf(
                     CircleDash(5.dp, 0.7f, "#318BF6"),
                     CircleDash(9.dp, 0.15f, "#318BF6")
@@ -107,7 +133,9 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 55.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                true,
                 listOf(
                     CircleDash(4.5f.dp, 0.49f, "#318BF6")
                 )
@@ -117,7 +145,9 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 69.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                false,
                 listOf(
                     CircleDash(3.5f.dp, 0.2f, "#318BF6")
                 )
@@ -127,10 +157,12 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 83.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                true,
                 listOf(
                     CircleDash(3.5f.dp, 0.9f, "#318BF6"),
-                    CircleDash(2.5f.dp,  0.3f,"#318BF6")
+                    CircleDash(2.5f.dp, 0.3f, "#318BF6")
 
                 )
             ),
@@ -139,7 +171,9 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 97.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                false,
                 listOf()
             ),
             CircleArcEffect(
@@ -147,54 +181,37 @@ class CustomView @JvmOverloads constructor(
                 360f,
                 111.dp,
                 "#D6E8FD",
-                1.dp,
+                1.dp, width.toFloat(),
+                height.toFloat(),
+                true,
                 listOf()
             )
         )
+
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        setMeasuredDimension(widthSize,widthSize)
-    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for ((index, item) in mEffects.withIndex()) {
+        for (item in mEffects) {
+            paint.color = Color.parseColor(item.color)
+            paint.strokeWidth = item.strokeWidth
             if (item is StandardArcEffect) {
-                paint.color = Color.parseColor(item.color)
                 paint.pathEffect = item.pathEffect
-                paint.strokeWidth = item.strokeWidth
-                val path = Path()
-                path.addArc(
-                    0f + item.offset,
-                    0f + item.offset,
-                    width.toFloat() - item.offset,
-                    height.toFloat() - item.offset,
-                    item.startAngle-offsetAngle,
-                    item.sweepAngle
-                )
-                canvas.drawPath(path, paint)
+                item.matrixRotate(offsetAngle)
+                val rotatedPath = Path()
+                item.path.transform(item.matrix, rotatedPath)
+                canvas.drawPath(rotatedPath, paint)
             } else if (item is CircleArcEffect) {
-                paint.color = Color.parseColor(item.color)
+                item.matrixRotate(offsetAngle)
                 paint.pathEffect = null
-                paint.strokeWidth = item.strokeWidth
-                dotPaint.color = Color.parseColor(item.color)
-                val path = Path()
-                path.addArc(
-                    0f + item.offset,
-                    0f + item.offset,
-                    width.toFloat() - item.offset,
-                    height.toFloat() - item.offset,
-                    item.startAngle-offsetAngle,
-                    item.sweepAngle
-                )
-                canvas.drawPath(path, paint)
+                val rotatedPath = Path()
+                item.path.transform(item.matrix, rotatedPath)
+                canvas.drawPath(rotatedPath, paint) // 添加此行以绘制圆形路径
                 if (item.circles.isNotEmpty()) {
-                    pathMeasure.setPath(path, false)
+                    pathMeasure.setPath(rotatedPath, true)
                     val mPathLength = pathMeasure.length
-                    val endPos = FloatArray(2)
+                    dotPaint.color = Color.parseColor(item.color)
                     for (circle in item.circles) {
                         val radius = circle.size
                         dotPaint.color = Color.parseColor(circle.color)
@@ -205,9 +222,46 @@ class CustomView @JvmOverloads constructor(
             }
         }
 
+
     }
 
+    open class Effect(
+        startAngle: Float,//开始角度
+        sweepAngle: Float,//偏移角度
+        offset: Float,//内部偏移量
+        val color: String,//画笔的颜色设置
+        val strokeWidth: Float,//线条的宽度
+        width: Float,
+        height: Float,
+        val counterclockwise:Boolean
+    ) {
+        val path = Path()
+        val matrix = Matrix()
+        private val centerX = ((width - offset) + offset) / 2
+        private val centerY = ((height - offset) + offset) / 2
 
+        init {
+            path.addArc(
+                offset,
+                offset,
+                width - offset,
+                height - offset,
+                startAngle,
+                sweepAngle
+            )
+            matrix.setTranslate(centerX, centerY)
+        }
+
+        public fun matrixRotate(rotateDeg: Float) {
+            matrix.reset()
+            if (counterclockwise){
+                matrix.postRotate(rotateDeg, centerX, centerY)
+            }else{
+                matrix.postRotate(-rotateDeg, centerX, centerY)
+
+            }
+        }
+    }
 
     data class CircleArcEffect(
         val q: Float,//开始角度
@@ -215,9 +269,12 @@ class CustomView @JvmOverloads constructor(
         val e: Float,//内部偏移量
         val r: String,//画笔的颜色设置
         val t: Float,
+        val a: Float,
+        val s: Float,
+        val d:  Boolean,
         val circles: List<CircleDash>,//路径特效
 
-    ) : Effect(q, w, t / 2 + e, r, t)
+    ) : Effect(q, w, t / 2 + e, r, t, a, s,d)
 
     data class CircleDash(
         val size: Float, //添加圆点的大小
@@ -231,7 +288,10 @@ class CustomView @JvmOverloads constructor(
         val e: Float,//内部偏移量
         val r: String,//画笔的颜色设置
         val t: Float,
+        val a: Float,
+        val s: Float,
+        val d:  Boolean,
         val pathEffect: PathEffect //路径特效
-    ) : Effect(q, w, t / 2 + e, r, t)
+    ) : Effect(q, w, t / 2 + e, r, t, a, s,d)
 
 }
