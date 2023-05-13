@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AppCompatActivity
 import cn.com.dihealth.myapplication.databinding.ActivityMainBinding
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         anim.fillAfter = true // 设置保持动画最后的状态
         anim.duration = 10 * 1000 // 设置动画时间
         anim.repeatCount = ValueAnimator.INFINITE
-        anim.interpolator = AccelerateInterpolator() // 设置插入器
+        anim.interpolator = LinearInterpolator() // 设置插入器
         binding.customView.startAnimation(anim)
 
     }
