@@ -90,7 +90,7 @@ class CustomView @JvmOverloads constructor(
                 90f,
                 24.dp,
                 "#318BF6",
-                3.dp, width.toFloat(),
+                2.dp, width.toFloat(),
                 height.toFloat(),
                 true, 0.65f,
                 listOf(
