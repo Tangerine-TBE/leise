@@ -21,18 +21,5 @@ class MainActivity : AppCompatActivity() {
         animator.interpolator = LinearInterpolator()
         animator.duration = 8 * 1000
         animator.start()
-//        val customView:test = binding.customView
-//        customView.startAnimation()
-//        val anim: Animation = RotateAnimation(360f,
-//            0f,Animation.RELATIVE_TO_SELF,
-//            0.5f,Animation.RELATIVE_TO_SELF,
-//            0.5f
-//        )
-//        anim.fillAfter = true // 设置保持动画最后的状态
-//        anim.duration = 10 * 1000 // 设置动画时间
-//        anim.repeatCount = ValueAnimator.INFINITE
-//        anim.interpolator = LinearInterpolator() // 设置插入器
-//        binding.customView.startAnimation(anim)
-
     }
 }

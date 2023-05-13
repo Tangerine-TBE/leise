@@ -232,7 +232,7 @@ class CustomView @JvmOverloads constructor(
         val strokeWidth: Float,//线条的宽度
         width: Float,
         height: Float,
-        val counterclockwise:Boolean
+        private val counterclockwise:Boolean
     ) {
         val path = Path()
         val matrix = Matrix()
