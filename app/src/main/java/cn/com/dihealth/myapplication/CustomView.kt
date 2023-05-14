@@ -1,9 +1,14 @@
 package cn.com.dihealth.myapplication
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import android.view.animation.LinearInterpolator
 
 class CustomView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
@@ -22,13 +27,21 @@ class CustomView @JvmOverloads constructor(
         style = Paint.Style.FILL
         Paint.ANTI_ALIAS_FLAG
     }
-    var offsetAngle = 0f
+    private val scannerPaint = Paint().apply {
+        style = Paint.Style.FILL
+        Paint.ANTI_ALIAS_FLAG
+
+    }
+    private val bitmapPaint = Paint().apply {
+        Paint.ANTI_ALIAS_FLAG
+    }
+     var offsetAngle = 0f
         set(value) {
             field = value
             invalidate()
         }
     private lateinit var mEffects: List<Effect>
-
+    private lateinit var sweepGradient: SweepGradient
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
@@ -40,12 +53,14 @@ class CustomView @JvmOverloads constructor(
         init()
     }
 
-    public fun reverser() {
-        for (item in mEffects) {
-            item.setCounterClockwise()
-        }
-        invalidate()
-    }
+    private val iconBitmap = BitmapFactory.decodeResource(resources, R.drawable.icon_search)
+
+//    public fun reverser() {
+//        for (item in mEffects) {
+//            item.setCounterClockwise()
+//        }
+//        invalidate()
+//    }
 
     private fun init() {
         mEffects = listOf(
@@ -191,13 +206,17 @@ class CustomView @JvmOverloads constructor(
                 listOf()
             )
         )
-
+        sweepGradient = SweepGradient(
+            mEffects[0].centerX, mEffects[0].centerY,
+            intArrayOf(Color.TRANSPARENT, Color.parseColor("#B1D1FF")), null
+        )
+        scannerPaint.shader = sweepGradient
     }
 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for (item in mEffects) {
+        for ((index, item) in mEffects.withIndex()) {
             paint.color = Color.parseColor(item.color)
             paint.strokeWidth = item.strokeWidth
             if (item is StandardArcEffect) {
@@ -223,19 +242,38 @@ class CustomView @JvmOverloads constructor(
                         canvas.drawCircle(endPos[0], endPos[1], radius, dotPaint)
                     }
                 }
+                /*雷达扫描*/
+                if (index == 7) {
+                    canvas.save()
+                    canvas.rotate(
+                        offsetAngle * 3.5f, item.centerX,
+                        item.centerY
+                    )
+                    canvas.drawCircle(
+                        item.centerX,
+                        item.centerY,
+                        (item.width - 2 * item.offset) / 2,
+                        scannerPaint
+                    )
+                    canvas.restore()
+                    canvas.drawBitmap(
+                        iconBitmap,
+                        item.centerX - iconBitmap.width / 2,
+                        item.centerY - iconBitmap.height / 2,
+                        bitmapPaint
+                    )
+                }
             }
         }
-
-
     }
 
     open class Effect(
         startAngle: Float,//开始角度
         sweepAngle: Float,//偏移角度
-        offset: Float,//内部偏移量
+        val offset: Float,//内部偏移量
         val color: String,//画笔的颜色设置
         val strokeWidth: Float,//线条的宽度
-        width: Float,
+        val width: Float,
         height: Float,
         private var counterclockwise: Boolean = false,
         val scale: Float,//放大速度
@@ -243,8 +281,8 @@ class CustomView @JvmOverloads constructor(
     ) {
         val path = Path()
         val matrix = Matrix()
-        private val centerX = ((width - offset) + offset) / 2
-        private val centerY = ((height - offset) + offset) / 2
+        val centerX = ((width - offset) + offset) / 2
+        val centerY = ((height - offset) + offset) / 2
 
         init {
             path.addArc(
@@ -266,22 +304,22 @@ class CustomView @JvmOverloads constructor(
                 matrix.postRotate(-rotateDeg, centerX, centerY)
             }
         }
-
-        fun setCounterClockwise() {
-            counterclockwise = !counterclockwise
-        }
+//
+//        fun setCounterClockwise() {
+//            counterclockwise = !counterclockwise
+//        }
     }
 
     data class CircleArcEffect(
-        val q: Float,//开始角度
-        val w: Float,//偏移角度
-        val e: Float,//内部偏移量
-        val r: String,//画笔的颜色设置
-        val t: Float,
-        val a: Float,
-        val s: Float,
-        val d: Boolean,
-        val f: Float,
+        private val q: Float,//开始角度
+        private val w: Float,//偏移角度
+        private val e: Float,//内部偏移量
+        private val r: String,//画笔的颜色设置
+        private val t: Float,
+        private val a: Float,
+        private val s: Float,
+        private val d: Boolean,
+        private val f: Float,
         val circles: List<CircleDash>,//路径特效
 
     ) : Effect(q, w, t / 2 + e, r, t, a, s, d, f)
@@ -293,15 +331,15 @@ class CustomView @JvmOverloads constructor(
     )
 
     data class StandardArcEffect(
-        val q: Float,//开始角度
-        val w: Float,//偏移角度
-        val e: Float,//内部偏移量
-        val r: String,//画笔的颜色设置
-        val t: Float,
-        val a: Float,
-        val s: Float,
-        val d: Boolean,
-        val f: Float,//放大速度
+        private val q: Float,//开始角度
+        private val w: Float,//偏移角度
+        private val e: Float,//内部偏移量
+        private val r: String,//画笔的颜色设置
+        private val t: Float,
+        private val a: Float,
+        private val s: Float,
+        private val d: Boolean,
+        private val f: Float,//放大速度
         val pathEffect: PathEffect //路径特效
     ) : Effect(q, w, t / 2 + e, r, t, a, s, d, f)
 

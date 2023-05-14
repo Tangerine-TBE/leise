@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <cn.com.dihealth.myapplication.CustomView
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:id="@+id/customView"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
